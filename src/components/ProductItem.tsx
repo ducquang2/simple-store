@@ -35,6 +35,7 @@ export default function ProductItem(product: {
             onClick={() => {
               if (itemCount <= 0) {
                 window.alert("Item count can't less than 0")
+                setItemCount(0)
               } else {
                 setItemCount(itemCount - 1)
               }
@@ -48,6 +49,7 @@ export default function ProductItem(product: {
             required
             type={'number'}
             value={itemCount}
+            min={0}
             onChange={(e) => {
               if (e.target.valueAsNumber < 0) {
                 window.alert("Item count can't less than 0")
