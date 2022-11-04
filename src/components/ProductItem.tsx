@@ -9,10 +9,6 @@ export default function ProductItem(product: {
   const [itemCount, setItemCount] = useState(0)
   const [itemInCart, setItemInCart] = useState()
 
-  // const handleAddCart = () => {
-  //   setItemInCart(current => [...current, {id: product.id, name: product.name, image: product.image, price: product.price, amount: itemCount}])
-  // }
-
   return (
     <div
       className="max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700"
