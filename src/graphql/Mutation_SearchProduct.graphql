@@ -1,0 +1,8 @@
+mutation SearchProduct($name: String!) {
+  SearchProduct(name: $name) {
+    name
+    image
+    price
+    id
+  }
+}

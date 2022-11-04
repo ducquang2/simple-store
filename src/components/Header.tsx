@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import Cart from './Cart'
 
 export default function Header() {
   // const [navbarOpen, setNavbarOpen] = useState(false)
@@ -9,7 +10,7 @@ export default function Header() {
   )
 
   return (
-    <div className="relative flex flex-wrap items-center justify-between px-2 py-3 bg-sky-500 mb-3">
+    <div className="relative flex flex-wrap items-center justify-between px-2 py-3 bg-cyan-500 mb-3">
       <div>
         <Link to="/">
           <div>Home</div>
@@ -17,8 +18,6 @@ export default function Header() {
       </div>
       {loginState === null ? (
         <div className="flex flex-col lg:flex-row list-none lg:ml-auto">
-          {/* {setLoginState(true)} */}
-          {/* <div>{loginState}</div> */}
           <Link to="/signin">
             <p className='text-sm font-bold leading-relaxed inline-block mr-4 py-2 whitespace-nowrap uppercase text-white"'>
               Login
@@ -32,7 +31,14 @@ export default function Header() {
         </div>
       ) : (
         <div className="flex flex-col lg:flex-row list-none lg:ml-auto">
-          <p>Hello, {loginState}</p>
+          <p className="text-sm font-bold leading-relaxed inline-block mr-4 py-2 whitespace-nowrap uppercase text-white">
+            Hello, {loginState.toString()}
+          </p>
+          <Link to="/cart">
+            <p className="text-sm font-bold leading-relaxed inline-block mr-4 py-2 whitespace-nowrap uppercase text-white">
+              Cart
+            </p>
+          </Link>
           <Link
             to="/"
             onClick={() => {
@@ -40,7 +46,9 @@ export default function Header() {
               setLoginState(null)
             }}
           >
-            <p>SignOut</p>
+            <p className="text-sm font-bold leading-relaxed inline-block mr-4 py-2 whitespace-nowrap uppercase text-red-600">
+              SignOut
+            </p>
           </Link>
         </div>
       )}
