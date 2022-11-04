@@ -35,7 +35,7 @@ function DisplayProduct() {
           </button>
         </div>
       </form>
-      <div className="grid grid-flow-col">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 md:gap-x-10 xl-grid-cols-4 gap-y-10 gap-x-6 ">
         {(data?.products || []).map((product) => (
           <ProductItem
             id={product?.id}

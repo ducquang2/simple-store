@@ -1,7 +1,5 @@
+import CartItem from './CartItem'
+
 export default function Cart() {
-  return (
-    <div>
-      <p>Test</p>
-    </div>
-  )
+  return <div></div>
 }
