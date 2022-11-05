@@ -1,13 +1,18 @@
-import React, { useState } from 'react'
+import { SubmitHandler, useForm } from 'react-hook-form'
 import { useLoginMutation } from '../generated'
+import { IFormInput } from './SignUp'
 
 export default function LogIn() {
-  const [formState, setFormState] = useState({
-    username: '',
-    password: '',
-  })
-
   const [login] = useLoginMutation()
+
+  const { register, handleSubmit } = useForm<IFormInput>()
+
+  const onHandleSubmit: SubmitHandler<IFormInput> = (data) => {
+    login({
+      variables: data,
+    })
+    localStorage.setItem('token-info', JSON.stringify(data.username))
+  }
 
   return (
     <div className="gap-6 m-6">
@@ -15,23 +20,10 @@ export default function LogIn() {
       <form
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
-            e.preventDefault()
-            login({
-              variables: formState,
-            })
-            localStorage.setItem(
-              'token-info',
-              JSON.stringify(formState.username)
-            )
+            handleSubmit(onHandleSubmit)
           }
         }}
-        onSubmit={(e) => {
-          e.preventDefault()
-          login({
-            variables: formState,
-          })
-          localStorage.setItem('token-info', JSON.stringify(formState.username))
-        }}
+        onSubmit={handleSubmit(onHandleSubmit)}
       >
         <div className="mb-6">
           <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">
@@ -39,15 +31,7 @@ export default function LogIn() {
           </label>
           <input
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            required
-            type={'text'}
-            value={formState.username}
-            onChange={(e) =>
-              setFormState({
-                ...formState,
-                username: e.target.value,
-              })
-            }
+            {...register('username', { required: true })}
           ></input>
         </div>
         <div className="mb-6">
@@ -56,15 +40,7 @@ export default function LogIn() {
           </label>
           <input
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            required
-            type={'password'}
-            value={formState.password}
-            onChange={(e) =>
-              setFormState({
-                ...formState,
-                password: e.target.value,
-              })
-            }
+            {...register('password', { required: true })}
           ></input>
         </div>
         <button

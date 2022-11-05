@@ -1,0 +1,7 @@
+mutation AddToCart($userID: ID!, $itemID: ID!, $itemCount: Int!) {
+  AddToCart(userID: $userID, itemID: $itemID, itemCount: $itemCount) {
+    userID
+    itemID
+    itemCount
+  }
+}

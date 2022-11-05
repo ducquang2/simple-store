@@ -1,4 +1,6 @@
-import { useGetProductQuery } from '../generated'
+import { useState } from 'react'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import { useGetProductQuery, useSearchProductMutation } from '../generated'
 import ProductItem from './ProductItem'
 
 export default function ProductList() {
@@ -10,22 +12,48 @@ export default function ProductList() {
   )
 }
 
+interface IProductInput {
+  name: string
+}
+
 function DisplayProduct() {
-  const { data } = useGetProductQuery()
+  const { data: queryData } = useGetProductQuery()
+
+  const [search, { data: searchData }] = useSearchProductMutation()
+
+  const [searchResult, setSearchResult] = useState(false)
+
+  const { register, handleSubmit } = useForm<IProductInput>()
+
+  const onHandleSubmit: SubmitHandler<IProductInput> = (submitData) => {
+    search({
+      variables: submitData,
+    })
+    if (submitData.name == '') {
+      setSearchResult(false)
+    } else {
+      setSearchResult(true)
+    }
+  }
 
   return (
     <div className="mt-6">
-      <form>
+      <form
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            handleSubmit(onHandleSubmit)
+          }
+        }}
+        onSubmit={handleSubmit(onHandleSubmit)}
+      >
         <label className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-gray-300">
           Product Name
         </label>
         <div className="relative">
           <input
-            type="search"
-            id="search"
             className="block p-4 pl-5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             placeholder="Search"
-            required
+            {...register('name')}
           ></input>
           <button
             type="submit"
@@ -35,16 +63,26 @@ function DisplayProduct() {
           </button>
         </div>
       </form>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 md:gap-x-10 xl-grid-cols-4 gap-y-10 gap-x-6 ">
-        {(data?.products || []).map((product) => (
-          <ProductItem
-            id={product?.id}
-            name={product?.name}
-            image={product?.image}
-            price={product?.price}
-            key={product?.id}
-          />
-        ))}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 md:gap-x-10 xl-grid-cols-4 gap-y-10 gap-x-6 p-4">
+        {searchResult
+          ? (searchData?.SearchProduct || []).map((searchProduct) => (
+              <ProductItem
+                id={searchProduct?.id}
+                name={searchProduct?.name}
+                image={searchProduct?.image}
+                price={searchProduct?.price}
+                key={searchProduct?.id}
+              />
+            ))
+          : (queryData?.products || []).map((product) => (
+              <ProductItem
+                id={product?.id}
+                name={product?.name}
+                image={product?.image}
+                price={product?.price}
+                key={product?.id}
+              />
+            ))}
       </div>
     </div>
   )

@@ -15,10 +15,31 @@ export type Scalars = {
   Float: number;
 };
 
+export type Cart = {
+  __typename?: 'Cart';
+  itemCount?: Maybe<Scalars['Int']>;
+  itemID?: Maybe<Scalars['ID']>;
+  userID?: Maybe<Scalars['ID']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
+  AddToCart?: Maybe<Array<Maybe<Cart>>>;
+  SearchProduct?: Maybe<Array<Maybe<Product>>>;
   SignIn?: Maybe<User>;
   SignUp?: Maybe<User>;
+};
+
+
+export type MutationAddToCartArgs = {
+  itemCount: Scalars['Int'];
+  itemID: Scalars['ID'];
+  userID: Scalars['ID'];
+};
+
+
+export type MutationSearchProductArgs = {
+  name: Scalars['String'];
 };
 
 
@@ -56,6 +77,15 @@ export type User = {
 
 export type UserFragment = { __typename?: 'User', username?: string | null, password?: string | null };
 
+export type AddToCartMutationVariables = Exact<{
+  userID: Scalars['ID'];
+  itemID: Scalars['ID'];
+  itemCount: Scalars['Int'];
+}>;
+
+
+export type AddToCartMutation = { __typename?: 'Mutation', AddToCart?: Array<{ __typename?: 'Cart', userID?: string | null, itemID?: string | null, itemCount?: number | null } | null> | null };
+
 export type LoginMutationVariables = Exact<{
   username: Scalars['String'];
   password: Scalars['String'];
@@ -63,6 +93,13 @@ export type LoginMutationVariables = Exact<{
 
 
 export type LoginMutation = { __typename?: 'Mutation', SignIn?: { __typename?: 'User', username?: string | null, password?: string | null } | null };
+
+export type SearchProductMutationVariables = Exact<{
+  name: Scalars['String'];
+}>;
+
+
+export type SearchProductMutation = { __typename?: 'Mutation', SearchProduct?: Array<{ __typename?: 'Product', name?: string | null, image?: string | null, price?: number | null, id?: string | null } | null> | null };
 
 export type SignUpMutationVariables = Exact<{
   username: Scalars['String'];
@@ -88,6 +125,43 @@ export const UserFragmentDoc = gql`
   password
 }
     `;
+export const AddToCartDocument = gql`
+    mutation AddToCart($userID: ID!, $itemID: ID!, $itemCount: Int!) {
+  AddToCart(userID: $userID, itemID: $itemID, itemCount: $itemCount) {
+    userID
+    itemID
+    itemCount
+  }
+}
+    `;
+export type AddToCartMutationFn = Apollo.MutationFunction<AddToCartMutation, AddToCartMutationVariables>;
+
+/**
+ * __useAddToCartMutation__
+ *
+ * To run a mutation, you first call `useAddToCartMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddToCartMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addToCartMutation, { data, loading, error }] = useAddToCartMutation({
+ *   variables: {
+ *      userID: // value for 'userID'
+ *      itemID: // value for 'itemID'
+ *      itemCount: // value for 'itemCount'
+ *   },
+ * });
+ */
+export function useAddToCartMutation(baseOptions?: Apollo.MutationHookOptions<AddToCartMutation, AddToCartMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AddToCartMutation, AddToCartMutationVariables>(AddToCartDocument, options);
+      }
+export type AddToCartMutationHookResult = ReturnType<typeof useAddToCartMutation>;
+export type AddToCartMutationResult = Apollo.MutationResult<AddToCartMutation>;
+export type AddToCartMutationOptions = Apollo.BaseMutationOptions<AddToCartMutation, AddToCartMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($username: String!, $password: String!) {
   SignIn(username: $username, password: $password) {
@@ -123,6 +197,42 @@ export function useLoginMutation(baseOptions?: Apollo.MutationHookOptions<LoginM
 export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
 export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
 export type LoginMutationOptions = Apollo.BaseMutationOptions<LoginMutation, LoginMutationVariables>;
+export const SearchProductDocument = gql`
+    mutation SearchProduct($name: String!) {
+  SearchProduct(name: $name) {
+    name
+    image
+    price
+    id
+  }
+}
+    `;
+export type SearchProductMutationFn = Apollo.MutationFunction<SearchProductMutation, SearchProductMutationVariables>;
+
+/**
+ * __useSearchProductMutation__
+ *
+ * To run a mutation, you first call `useSearchProductMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSearchProductMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [searchProductMutation, { data, loading, error }] = useSearchProductMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *   },
+ * });
+ */
+export function useSearchProductMutation(baseOptions?: Apollo.MutationHookOptions<SearchProductMutation, SearchProductMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SearchProductMutation, SearchProductMutationVariables>(SearchProductDocument, options);
+      }
+export type SearchProductMutationHookResult = ReturnType<typeof useSearchProductMutation>;
+export type SearchProductMutationResult = Apollo.MutationResult<SearchProductMutation>;
+export type SearchProductMutationOptions = Apollo.BaseMutationOptions<SearchProductMutation, SearchProductMutationVariables>;
 export const SignUpDocument = gql`
     mutation SignUp($username: String!, $password: String!) {
   SignUp(username: $username, password: $password) {
