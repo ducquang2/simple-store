@@ -1,5 +1,5 @@
-mutation SearchProduct($name: String!) {
-  SearchProduct(name: $name) {
+mutation SearchProductName($name: String!) {
+  SearchProductName(name: $name) {
     name
     image
     price

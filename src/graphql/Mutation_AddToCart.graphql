@@ -1,6 +1,6 @@
-mutation AddToCart($userID: ID!, $itemID: ID!, $itemCount: Int!) {
-  AddToCart(userID: $userID, itemID: $itemID, itemCount: $itemCount) {
-    userID
+mutation AddToCart($username: String!, $itemID: ID!, $itemCount: Int!) {
+  AddToCart(username: $username, itemID: $itemID, itemCount: $itemCount) {
+    username
     itemID
     itemCount
   }

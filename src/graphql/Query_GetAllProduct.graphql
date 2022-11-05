@@ -1,5 +1,5 @@
-query GetProduct {
-  products {
+query GetAllProducts {
+  GetAllProducts {
     id
     name
     image

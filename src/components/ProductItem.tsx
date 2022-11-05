@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { CartFragmentDoc, useAddToCartMutation } from '../generated'
 
 export default function ProductItem(product: {
   name: any
@@ -7,7 +8,40 @@ export default function ProductItem(product: {
   price: any
 }) {
   const [itemCount, setItemCount] = useState(0)
-  const [itemInCart, setItemInCart] = useState()
+
+  const [addToCart] = useAddToCartMutation({
+    update(cache, { data: addcart }) {
+      console.log(cache.extract())
+      cache.modify({
+        fields: {
+          users(existingCart = []) {
+            console.log(addcart)
+            const newCart = cache.writeFragment({
+              data: addcart,
+              fragment: CartFragmentDoc,
+            })
+            return [...existingCart, newCart]
+          },
+        },
+      })
+    },
+  })
+
+  const onHandleAddToCart = () => {
+    if (localStorage.getItem('token-info') === null) {
+      throw Error('User must logged in')
+    } else {
+      if (itemCount > 0) {
+        addToCart({
+          variables: {
+            username: JSON.parse(localStorage.getItem('token-info') || ''),
+            itemID: product.id,
+            itemCount: itemCount,
+          },
+        })
+      }
+    }
+  }
 
   return (
     <div
@@ -63,7 +97,10 @@ export default function ProductItem(product: {
           >
             +
           </button>
-          <button className="flex flex-col lg:flex-row list-none lg:ml-auto py-2 px-3 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+          <button
+            onClick={onHandleAddToCart}
+            className="flex flex-col lg:flex-row list-none lg:ml-auto py-2 px-3 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          >
             Add to cart
           </button>
         </div>

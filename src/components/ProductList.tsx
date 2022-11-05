@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { useGetProductQuery, useSearchProductMutation } from '../generated'
+import {
+  useGetAllProductsQuery,
+  useSearchProductNameMutation,
+} from '../generated'
 import ProductItem from './ProductItem'
 
 export default function ProductList() {
@@ -17,9 +20,9 @@ interface IProductInput {
 }
 
 function DisplayProduct() {
-  const { data: queryData } = useGetProductQuery()
+  const { data: queryData } = useGetAllProductsQuery()
 
-  const [search, { data: searchData }] = useSearchProductMutation()
+  const [search, { data: searchData }] = useSearchProductNameMutation()
 
   const [searchResult, setSearchResult] = useState(false)
 
@@ -65,7 +68,7 @@ function DisplayProduct() {
       </form>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 md:gap-x-10 xl-grid-cols-4 gap-y-10 gap-x-6 p-4">
         {searchResult
-          ? (searchData?.SearchProduct || []).map((searchProduct) => (
+          ? (searchData?.SearchProductName || []).map((searchProduct) => (
               <ProductItem
                 id={searchProduct?.id}
                 name={searchProduct?.name}
@@ -74,7 +77,7 @@ function DisplayProduct() {
                 key={searchProduct?.id}
               />
             ))
-          : (queryData?.products || []).map((product) => (
+          : (queryData?.GetAllProducts || []).map((product) => (
               <ProductItem
                 id={product?.id}
                 name={product?.name}

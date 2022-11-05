@@ -19,13 +19,13 @@ export type Cart = {
   __typename?: 'Cart';
   itemCount?: Maybe<Scalars['Int']>;
   itemID?: Maybe<Scalars['ID']>;
-  userID?: Maybe<Scalars['ID']>;
+  username: Scalars['String'];
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
   AddToCart?: Maybe<Array<Maybe<Cart>>>;
-  SearchProduct?: Maybe<Array<Maybe<Product>>>;
+  SearchProductName?: Maybe<Array<Maybe<Product>>>;
   SignIn?: Maybe<User>;
   SignUp?: Maybe<User>;
 };
@@ -34,11 +34,11 @@ export type Mutation = {
 export type MutationAddToCartArgs = {
   itemCount: Scalars['Int'];
   itemID: Scalars['ID'];
-  userID: Scalars['ID'];
+  username: Scalars['String'];
 };
 
 
-export type MutationSearchProductArgs = {
+export type MutationSearchProductNameArgs = {
   name: Scalars['String'];
 };
 
@@ -64,8 +64,20 @@ export type Product = {
 
 export type Query = {
   __typename?: 'Query';
-  products?: Maybe<Array<Maybe<Product>>>;
+  GetAllProducts?: Maybe<Array<Maybe<Product>>>;
+  GetCart?: Maybe<Array<Maybe<Cart>>>;
+  GetProductWithID?: Maybe<Product>;
   users?: Maybe<Array<Maybe<User>>>;
+};
+
+
+export type QueryGetCartArgs = {
+  username: Scalars['String'];
+};
+
+
+export type QueryGetProductWithIdArgs = {
+  id: Scalars['ID'];
 };
 
 export type User = {
@@ -75,16 +87,18 @@ export type User = {
   username?: Maybe<Scalars['String']>;
 };
 
+export type CartFragment = { __typename?: 'Cart', username: string, itemID?: string | null, itemCount?: number | null };
+
 export type UserFragment = { __typename?: 'User', username?: string | null, password?: string | null };
 
 export type AddToCartMutationVariables = Exact<{
-  userID: Scalars['ID'];
+  username: Scalars['String'];
   itemID: Scalars['ID'];
   itemCount: Scalars['Int'];
 }>;
 
 
-export type AddToCartMutation = { __typename?: 'Mutation', AddToCart?: Array<{ __typename?: 'Cart', userID?: string | null, itemID?: string | null, itemCount?: number | null } | null> | null };
+export type AddToCartMutation = { __typename?: 'Mutation', AddToCart?: Array<{ __typename?: 'Cart', username: string, itemID?: string | null, itemCount?: number | null } | null> | null };
 
 export type LoginMutationVariables = Exact<{
   username: Scalars['String'];
@@ -94,12 +108,12 @@ export type LoginMutationVariables = Exact<{
 
 export type LoginMutation = { __typename?: 'Mutation', SignIn?: { __typename?: 'User', username?: string | null, password?: string | null } | null };
 
-export type SearchProductMutationVariables = Exact<{
+export type SearchProductNameMutationVariables = Exact<{
   name: Scalars['String'];
 }>;
 
 
-export type SearchProductMutation = { __typename?: 'Mutation', SearchProduct?: Array<{ __typename?: 'Product', name?: string | null, image?: string | null, price?: number | null, id?: string | null } | null> | null };
+export type SearchProductNameMutation = { __typename?: 'Mutation', SearchProductName?: Array<{ __typename?: 'Product', name?: string | null, image?: string | null, price?: number | null, id?: string | null } | null> | null };
 
 export type SignUpMutationVariables = Exact<{
   username: Scalars['String'];
@@ -109,16 +123,37 @@ export type SignUpMutationVariables = Exact<{
 
 export type SignUpMutation = { __typename?: 'Mutation', SignUp?: { __typename?: 'User', username?: string | null, password?: string | null } | null };
 
-export type GetProductQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetAllProductsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetProductQuery = { __typename?: 'Query', products?: Array<{ __typename?: 'Product', id?: string | null, name?: string | null, image?: string | null, price?: number | null } | null> | null };
+export type GetAllProductsQuery = { __typename?: 'Query', GetAllProducts?: Array<{ __typename?: 'Product', id?: string | null, name?: string | null, image?: string | null, price?: number | null } | null> | null };
+
+export type GetCartQueryVariables = Exact<{
+  username: Scalars['String'];
+}>;
+
+
+export type GetCartQuery = { __typename?: 'Query', GetCart?: Array<{ __typename?: 'Cart', username: string, itemID?: string | null, itemCount?: number | null } | null> | null };
+
+export type GetProductWithIdQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type GetProductWithIdQuery = { __typename?: 'Query', GetProductWithID?: { __typename?: 'Product', name?: string | null, image?: string | null, price?: number | null, id?: string | null } | null };
 
 export type GetUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetUserQuery = { __typename?: 'Query', users?: Array<{ __typename?: 'User', id?: string | null, username?: string | null, password?: string | null } | null> | null };
 
+export const CartFragmentDoc = gql`
+    fragment Cart on Cart {
+  username
+  itemID
+  itemCount
+}
+    `;
 export const UserFragmentDoc = gql`
     fragment User on User {
   username
@@ -126,9 +161,9 @@ export const UserFragmentDoc = gql`
 }
     `;
 export const AddToCartDocument = gql`
-    mutation AddToCart($userID: ID!, $itemID: ID!, $itemCount: Int!) {
-  AddToCart(userID: $userID, itemID: $itemID, itemCount: $itemCount) {
-    userID
+    mutation AddToCart($username: String!, $itemID: ID!, $itemCount: Int!) {
+  AddToCart(username: $username, itemID: $itemID, itemCount: $itemCount) {
+    username
     itemID
     itemCount
   }
@@ -149,7 +184,7 @@ export type AddToCartMutationFn = Apollo.MutationFunction<AddToCartMutation, Add
  * @example
  * const [addToCartMutation, { data, loading, error }] = useAddToCartMutation({
  *   variables: {
- *      userID: // value for 'userID'
+ *      username: // value for 'username'
  *      itemID: // value for 'itemID'
  *      itemCount: // value for 'itemCount'
  *   },
@@ -197,9 +232,9 @@ export function useLoginMutation(baseOptions?: Apollo.MutationHookOptions<LoginM
 export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
 export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
 export type LoginMutationOptions = Apollo.BaseMutationOptions<LoginMutation, LoginMutationVariables>;
-export const SearchProductDocument = gql`
-    mutation SearchProduct($name: String!) {
-  SearchProduct(name: $name) {
+export const SearchProductNameDocument = gql`
+    mutation SearchProductName($name: String!) {
+  SearchProductName(name: $name) {
     name
     image
     price
@@ -207,32 +242,32 @@ export const SearchProductDocument = gql`
   }
 }
     `;
-export type SearchProductMutationFn = Apollo.MutationFunction<SearchProductMutation, SearchProductMutationVariables>;
+export type SearchProductNameMutationFn = Apollo.MutationFunction<SearchProductNameMutation, SearchProductNameMutationVariables>;
 
 /**
- * __useSearchProductMutation__
+ * __useSearchProductNameMutation__
  *
- * To run a mutation, you first call `useSearchProductMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useSearchProductMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useSearchProductNameMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSearchProductNameMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [searchProductMutation, { data, loading, error }] = useSearchProductMutation({
+ * const [searchProductNameMutation, { data, loading, error }] = useSearchProductNameMutation({
  *   variables: {
  *      name: // value for 'name'
  *   },
  * });
  */
-export function useSearchProductMutation(baseOptions?: Apollo.MutationHookOptions<SearchProductMutation, SearchProductMutationVariables>) {
+export function useSearchProductNameMutation(baseOptions?: Apollo.MutationHookOptions<SearchProductNameMutation, SearchProductNameMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<SearchProductMutation, SearchProductMutationVariables>(SearchProductDocument, options);
+        return Apollo.useMutation<SearchProductNameMutation, SearchProductNameMutationVariables>(SearchProductNameDocument, options);
       }
-export type SearchProductMutationHookResult = ReturnType<typeof useSearchProductMutation>;
-export type SearchProductMutationResult = Apollo.MutationResult<SearchProductMutation>;
-export type SearchProductMutationOptions = Apollo.BaseMutationOptions<SearchProductMutation, SearchProductMutationVariables>;
+export type SearchProductNameMutationHookResult = ReturnType<typeof useSearchProductNameMutation>;
+export type SearchProductNameMutationResult = Apollo.MutationResult<SearchProductNameMutation>;
+export type SearchProductNameMutationOptions = Apollo.BaseMutationOptions<SearchProductNameMutation, SearchProductNameMutationVariables>;
 export const SignUpDocument = gql`
     mutation SignUp($username: String!, $password: String!) {
   SignUp(username: $username, password: $password) {
@@ -268,9 +303,9 @@ export function useSignUpMutation(baseOptions?: Apollo.MutationHookOptions<SignU
 export type SignUpMutationHookResult = ReturnType<typeof useSignUpMutation>;
 export type SignUpMutationResult = Apollo.MutationResult<SignUpMutation>;
 export type SignUpMutationOptions = Apollo.BaseMutationOptions<SignUpMutation, SignUpMutationVariables>;
-export const GetProductDocument = gql`
-    query GetProduct {
-  products {
+export const GetAllProductsDocument = gql`
+    query GetAllProducts {
+  GetAllProducts {
     id
     name
     image
@@ -280,31 +315,106 @@ export const GetProductDocument = gql`
     `;
 
 /**
- * __useGetProductQuery__
+ * __useGetAllProductsQuery__
  *
- * To run a query within a React component, call `useGetProductQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetProductQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetAllProductsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAllProductsQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetProductQuery({
+ * const { data, loading, error } = useGetAllProductsQuery({
  *   variables: {
  *   },
  * });
  */
-export function useGetProductQuery(baseOptions?: Apollo.QueryHookOptions<GetProductQuery, GetProductQueryVariables>) {
+export function useGetAllProductsQuery(baseOptions?: Apollo.QueryHookOptions<GetAllProductsQuery, GetAllProductsQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetProductQuery, GetProductQueryVariables>(GetProductDocument, options);
+        return Apollo.useQuery<GetAllProductsQuery, GetAllProductsQueryVariables>(GetAllProductsDocument, options);
       }
-export function useGetProductLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetProductQuery, GetProductQueryVariables>) {
+export function useGetAllProductsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAllProductsQuery, GetAllProductsQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetProductQuery, GetProductQueryVariables>(GetProductDocument, options);
+          return Apollo.useLazyQuery<GetAllProductsQuery, GetAllProductsQueryVariables>(GetAllProductsDocument, options);
         }
-export type GetProductQueryHookResult = ReturnType<typeof useGetProductQuery>;
-export type GetProductLazyQueryHookResult = ReturnType<typeof useGetProductLazyQuery>;
-export type GetProductQueryResult = Apollo.QueryResult<GetProductQuery, GetProductQueryVariables>;
+export type GetAllProductsQueryHookResult = ReturnType<typeof useGetAllProductsQuery>;
+export type GetAllProductsLazyQueryHookResult = ReturnType<typeof useGetAllProductsLazyQuery>;
+export type GetAllProductsQueryResult = Apollo.QueryResult<GetAllProductsQuery, GetAllProductsQueryVariables>;
+export const GetCartDocument = gql`
+    query GetCart($username: String!) {
+  GetCart(username: $username) {
+    username
+    itemID
+    itemCount
+  }
+}
+    `;
+
+/**
+ * __useGetCartQuery__
+ *
+ * To run a query within a React component, call `useGetCartQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCartQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCartQuery({
+ *   variables: {
+ *      username: // value for 'username'
+ *   },
+ * });
+ */
+export function useGetCartQuery(baseOptions: Apollo.QueryHookOptions<GetCartQuery, GetCartQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetCartQuery, GetCartQueryVariables>(GetCartDocument, options);
+      }
+export function useGetCartLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCartQuery, GetCartQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetCartQuery, GetCartQueryVariables>(GetCartDocument, options);
+        }
+export type GetCartQueryHookResult = ReturnType<typeof useGetCartQuery>;
+export type GetCartLazyQueryHookResult = ReturnType<typeof useGetCartLazyQuery>;
+export type GetCartQueryResult = Apollo.QueryResult<GetCartQuery, GetCartQueryVariables>;
+export const GetProductWithIdDocument = gql`
+    query GetProductWithID($id: ID!) {
+  GetProductWithID(id: $id) {
+    name
+    image
+    price
+    id
+  }
+}
+    `;
+
+/**
+ * __useGetProductWithIdQuery__
+ *
+ * To run a query within a React component, call `useGetProductWithIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetProductWithIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetProductWithIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetProductWithIdQuery(baseOptions: Apollo.QueryHookOptions<GetProductWithIdQuery, GetProductWithIdQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetProductWithIdQuery, GetProductWithIdQueryVariables>(GetProductWithIdDocument, options);
+      }
+export function useGetProductWithIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetProductWithIdQuery, GetProductWithIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetProductWithIdQuery, GetProductWithIdQueryVariables>(GetProductWithIdDocument, options);
+        }
+export type GetProductWithIdQueryHookResult = ReturnType<typeof useGetProductWithIdQuery>;
+export type GetProductWithIdLazyQueryHookResult = ReturnType<typeof useGetProductWithIdLazyQuery>;
+export type GetProductWithIdQueryResult = Apollo.QueryResult<GetProductWithIdQuery, GetProductWithIdQueryVariables>;
 export const GetUserDocument = gql`
     query GetUser {
   users {
