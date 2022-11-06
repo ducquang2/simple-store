@@ -14,8 +14,8 @@ export default function Cart() {
       <div className="grid grid-rows-1 md:grid-rows-2 lg:grid-rows-3 md:gap-x-10 xl-grid-rows-4 gap-y-10 gap-x-6 p-4">
         {(data?.GetCart || []).map((item) => (
           <CartItem
-            id={item?.itemID}
-            itemcount={item?.itemCount}
+            id={item?.itemID || ''}
+            itemcount={item?.itemCount || 0}
             key={item?.itemID}
           />
         ))}
