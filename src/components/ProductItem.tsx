@@ -1,10 +1,5 @@
 import { useState } from 'react'
-import {
-  CartFragmentDoc,
-  GetCartDocument,
-  useAddToCartMutation,
-  useGetProfileQuery,
-} from '../generated'
+import { CartFragmentDoc, useAddToCartMutation, useGetProfileQuery } from '../generated'
 
 export default function ProductItem(product: { name: any; id: any; image: any; price: any }) {
   const { data } = useGetProfileQuery()
@@ -25,7 +20,6 @@ export default function ProductItem(product: { name: any; id: any; image: any; p
         },
       })
     },
-    refetchQueries: [{ query: GetCartDocument }],
   })
 
   const onHandleAddToCart = () => {
