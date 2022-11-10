@@ -10,10 +10,6 @@ export default function Cart() {
     },
   })
 
-  React.useEffect(() => {
-    window.location.href = '/cart'
-  }, [])
-
   return (
     <div>
       <h2>Your Cart</h2>
