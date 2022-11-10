@@ -19,17 +19,31 @@ export type Cart = {
   __typename?: 'Cart';
   itemCount?: Maybe<Scalars['Int']>;
   itemID?: Maybe<Scalars['ID']>;
-  username: Scalars['String'];
+  username?: Maybe<Scalars['String']>;
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
+  AddAdmin?: Maybe<User>;
+  AddProductItem?: Maybe<Product>;
   AddToCart?: Maybe<Array<Maybe<Cart>>>;
   RemoveFromCart?: Maybe<Cart>;
   SearchProductName?: Maybe<Array<Maybe<Product>>>;
-  SignIn?: Maybe<User>;
+  SignIn?: Maybe<SignIn>;
   SignUp?: Maybe<User>;
   UpdateItemCountFromCart?: Maybe<Cart>;
+};
+
+
+export type MutationAddAdminArgs = {
+  username: Scalars['String'];
+};
+
+
+export type MutationAddProductItemArgs = {
+  image: Scalars['String'];
+  name: Scalars['String'];
+  price: Scalars['Int'];
 };
 
 
@@ -82,7 +96,8 @@ export type Query = {
   GetAllProducts?: Maybe<Array<Maybe<Product>>>;
   GetCart?: Maybe<Array<Maybe<Cart>>>;
   GetProductWithID?: Maybe<Product>;
-  users?: Maybe<Array<Maybe<User>>>;
+  GetProfile?: Maybe<User>;
+  GetUserInfo?: Maybe<User>;
 };
 
 
@@ -95,16 +110,39 @@ export type QueryGetProductWithIdArgs = {
   id: Scalars['ID'];
 };
 
+
+export type QueryGetUserInfoArgs = {
+  username: Scalars['String'];
+};
+
+export type SignIn = {
+  __typename?: 'SignIn';
+  token?: Maybe<Scalars['String']>;
+  user?: Maybe<User>;
+};
+
 export type User = {
   __typename?: 'User';
   id?: Maybe<Scalars['ID']>;
+  isadmin?: Maybe<Scalars['Boolean']>;
   password?: Maybe<Scalars['String']>;
   username?: Maybe<Scalars['String']>;
 };
 
-export type CartFragment = { __typename?: 'Cart', username: string, itemID?: string | null, itemCount?: number | null };
+export type CartFragment = { __typename?: 'Cart', username?: string | null, itemID?: string | null, itemCount?: number | null };
 
-export type UserFragment = { __typename?: 'User', username?: string | null, password?: string | null };
+export type ProductFragment = { __typename?: 'Product', name?: string | null, image?: string | null, price?: number | null };
+
+export type UserFragment = { __typename?: 'User', username?: string | null };
+
+export type AddProductItemMutationVariables = Exact<{
+  name: Scalars['String'];
+  image: Scalars['String'];
+  price: Scalars['Int'];
+}>;
+
+
+export type AddProductItemMutation = { __typename?: 'Mutation', AddProductItem?: { __typename?: 'Product', name?: string | null, image?: string | null, price?: number | null } | null };
 
 export type AddToCartMutationVariables = Exact<{
   username: Scalars['String'];
@@ -113,7 +151,7 @@ export type AddToCartMutationVariables = Exact<{
 }>;
 
 
-export type AddToCartMutation = { __typename?: 'Mutation', AddToCart?: Array<{ __typename?: 'Cart', username: string, itemID?: string | null, itemCount?: number | null } | null> | null };
+export type AddToCartMutation = { __typename?: 'Mutation', AddToCart?: Array<{ __typename?: 'Cart', username?: string | null, itemID?: string | null, itemCount?: number | null } | null> | null };
 
 export type LoginMutationVariables = Exact<{
   username: Scalars['String'];
@@ -121,7 +159,7 @@ export type LoginMutationVariables = Exact<{
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', SignIn?: { __typename?: 'User', username?: string | null, password?: string | null } | null };
+export type LoginMutation = { __typename?: 'Mutation', SignIn?: { __typename?: 'SignIn', token?: string | null, user?: { __typename?: 'User', username?: string | null } | null } | null };
 
 export type RemoveFromCartMutationVariables = Exact<{
   username: Scalars['String'];
@@ -129,7 +167,7 @@ export type RemoveFromCartMutationVariables = Exact<{
 }>;
 
 
-export type RemoveFromCartMutation = { __typename?: 'Mutation', RemoveFromCart?: { __typename?: 'Cart', username: string, itemID?: string | null, itemCount?: number | null } | null };
+export type RemoveFromCartMutation = { __typename?: 'Mutation', RemoveFromCart?: { __typename?: 'Cart', username?: string | null, itemID?: string | null, itemCount?: number | null } | null };
 
 export type SearchProductNameMutationVariables = Exact<{
   name: Scalars['String'];
@@ -144,7 +182,7 @@ export type SignUpMutationVariables = Exact<{
 }>;
 
 
-export type SignUpMutation = { __typename?: 'Mutation', SignUp?: { __typename?: 'User', username?: string | null, password?: string | null } | null };
+export type SignUpMutation = { __typename?: 'Mutation', SignUp?: { __typename?: 'User', username?: string | null } | null };
 
 export type UpdateItemCountFromCartMutationVariables = Exact<{
   username: Scalars['String'];
@@ -153,7 +191,7 @@ export type UpdateItemCountFromCartMutationVariables = Exact<{
 }>;
 
 
-export type UpdateItemCountFromCartMutation = { __typename?: 'Mutation', UpdateItemCountFromCart?: { __typename?: 'Cart', username: string, itemID?: string | null, itemCount?: number | null } | null };
+export type UpdateItemCountFromCartMutation = { __typename?: 'Mutation', UpdateItemCountFromCart?: { __typename?: 'Cart', username?: string | null, itemID?: string | null, itemCount?: number | null } | null };
 
 export type GetAllProductsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -165,7 +203,7 @@ export type GetCartQueryVariables = Exact<{
 }>;
 
 
-export type GetCartQuery = { __typename?: 'Query', GetCart?: Array<{ __typename?: 'Cart', username: string, itemID?: string | null, itemCount?: number | null } | null> | null };
+export type GetCartQuery = { __typename?: 'Query', GetCart?: Array<{ __typename?: 'Cart', username?: string | null, itemID?: string | null, itemCount?: number | null } | null> | null };
 
 export type GetProductWithIdQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -174,10 +212,17 @@ export type GetProductWithIdQueryVariables = Exact<{
 
 export type GetProductWithIdQuery = { __typename?: 'Query', GetProductWithID?: { __typename?: 'Product', name?: string | null, image?: string | null, price?: number | null, id?: string | null } | null };
 
-export type GetUserQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUserQuery = { __typename?: 'Query', users?: Array<{ __typename?: 'User', id?: string | null, username?: string | null, password?: string | null } | null> | null };
+export type GetProfileQuery = { __typename?: 'Query', GetProfile?: { __typename?: 'User', id?: string | null, username?: string | null } | null };
+
+export type GetUserInfoQueryVariables = Exact<{
+  username: Scalars['String'];
+}>;
+
+
+export type GetUserInfoQuery = { __typename?: 'Query', GetUserInfo?: { __typename?: 'User', isadmin?: boolean | null } | null };
 
 export const CartFragmentDoc = gql`
     fragment Cart on Cart {
@@ -186,12 +231,55 @@ export const CartFragmentDoc = gql`
   itemCount
 }
     `;
+export const ProductFragmentDoc = gql`
+    fragment Product on Product {
+  name
+  image
+  price
+}
+    `;
 export const UserFragmentDoc = gql`
     fragment User on User {
   username
-  password
 }
     `;
+export const AddProductItemDocument = gql`
+    mutation AddProductItem($name: String!, $image: String!, $price: Int!) {
+  AddProductItem(name: $name, image: $image, price: $price) {
+    name
+    image
+    price
+  }
+}
+    `;
+export type AddProductItemMutationFn = Apollo.MutationFunction<AddProductItemMutation, AddProductItemMutationVariables>;
+
+/**
+ * __useAddProductItemMutation__
+ *
+ * To run a mutation, you first call `useAddProductItemMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddProductItemMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addProductItemMutation, { data, loading, error }] = useAddProductItemMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      image: // value for 'image'
+ *      price: // value for 'price'
+ *   },
+ * });
+ */
+export function useAddProductItemMutation(baseOptions?: Apollo.MutationHookOptions<AddProductItemMutation, AddProductItemMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AddProductItemMutation, AddProductItemMutationVariables>(AddProductItemDocument, options);
+      }
+export type AddProductItemMutationHookResult = ReturnType<typeof useAddProductItemMutation>;
+export type AddProductItemMutationResult = Apollo.MutationResult<AddProductItemMutation>;
+export type AddProductItemMutationOptions = Apollo.BaseMutationOptions<AddProductItemMutation, AddProductItemMutationVariables>;
 export const AddToCartDocument = gql`
     mutation AddToCart($username: String!, $itemID: ID!, $itemCount: Int!) {
   AddToCart(username: $username, itemID: $itemID, itemCount: $itemCount) {
@@ -232,8 +320,10 @@ export type AddToCartMutationOptions = Apollo.BaseMutationOptions<AddToCartMutat
 export const LoginDocument = gql`
     mutation Login($username: String!, $password: String!) {
   SignIn(username: $username, password: $password) {
-    username
-    password
+    token
+    user {
+      username
+    }
   }
 }
     `;
@@ -340,7 +430,6 @@ export const SignUpDocument = gql`
     mutation SignUp($username: String!, $password: String!) {
   SignUp(username: $username, password: $password) {
     username
-    password
   }
 }
     `;
@@ -524,39 +613,73 @@ export function useGetProductWithIdLazyQuery(baseOptions?: Apollo.LazyQueryHookO
 export type GetProductWithIdQueryHookResult = ReturnType<typeof useGetProductWithIdQuery>;
 export type GetProductWithIdLazyQueryHookResult = ReturnType<typeof useGetProductWithIdLazyQuery>;
 export type GetProductWithIdQueryResult = Apollo.QueryResult<GetProductWithIdQuery, GetProductWithIdQueryVariables>;
-export const GetUserDocument = gql`
-    query GetUser {
-  users {
+export const GetProfileDocument = gql`
+    query GetProfile {
+  GetProfile {
     id
     username
-    password
   }
 }
     `;
 
 /**
- * __useGetUserQuery__
+ * __useGetProfileQuery__
  *
- * To run a query within a React component, call `useGetUserQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetProfileQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetProfileQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetUserQuery({
+ * const { data, loading, error } = useGetProfileQuery({
  *   variables: {
  *   },
  * });
  */
-export function useGetUserQuery(baseOptions?: Apollo.QueryHookOptions<GetUserQuery, GetUserQueryVariables>) {
+export function useGetProfileQuery(baseOptions?: Apollo.QueryHookOptions<GetProfileQuery, GetProfileQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetUserQuery, GetUserQueryVariables>(GetUserDocument, options);
+        return Apollo.useQuery<GetProfileQuery, GetProfileQueryVariables>(GetProfileDocument, options);
       }
-export function useGetUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserQuery, GetUserQueryVariables>) {
+export function useGetProfileLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetProfileQuery, GetProfileQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetUserQuery, GetUserQueryVariables>(GetUserDocument, options);
+          return Apollo.useLazyQuery<GetProfileQuery, GetProfileQueryVariables>(GetProfileDocument, options);
         }
-export type GetUserQueryHookResult = ReturnType<typeof useGetUserQuery>;
-export type GetUserLazyQueryHookResult = ReturnType<typeof useGetUserLazyQuery>;
-export type GetUserQueryResult = Apollo.QueryResult<GetUserQuery, GetUserQueryVariables>;
+export type GetProfileQueryHookResult = ReturnType<typeof useGetProfileQuery>;
+export type GetProfileLazyQueryHookResult = ReturnType<typeof useGetProfileLazyQuery>;
+export type GetProfileQueryResult = Apollo.QueryResult<GetProfileQuery, GetProfileQueryVariables>;
+export const GetUserInfoDocument = gql`
+    query GetUserInfo($username: String!) {
+  GetUserInfo(username: $username) {
+    isadmin
+  }
+}
+    `;
+
+/**
+ * __useGetUserInfoQuery__
+ *
+ * To run a query within a React component, call `useGetUserInfoQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUserInfoQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUserInfoQuery({
+ *   variables: {
+ *      username: // value for 'username'
+ *   },
+ * });
+ */
+export function useGetUserInfoQuery(baseOptions: Apollo.QueryHookOptions<GetUserInfoQuery, GetUserInfoQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUserInfoQuery, GetUserInfoQueryVariables>(GetUserInfoDocument, options);
+      }
+export function useGetUserInfoLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserInfoQuery, GetUserInfoQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUserInfoQuery, GetUserInfoQueryVariables>(GetUserInfoDocument, options);
+        }
+export type GetUserInfoQueryHookResult = ReturnType<typeof useGetUserInfoQuery>;
+export type GetUserInfoLazyQueryHookResult = ReturnType<typeof useGetUserInfoLazyQuery>;
+export type GetUserInfoQueryResult = Apollo.QueryResult<GetUserInfoQuery, GetUserInfoQueryVariables>;

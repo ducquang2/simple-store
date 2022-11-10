@@ -1,17 +1,17 @@
 import { useState } from 'react'
-import { CartFragmentDoc, useAddToCartMutation } from '../generated'
+import {
+  CartFragmentDoc,
+  GetCartDocument,
+  useAddToCartMutation,
+  useGetProfileQuery,
+} from '../generated'
 
-export default function ProductItem(product: {
-  name: any
-  id: any
-  image: any
-  price: any
-}) {
+export default function ProductItem(product: { name: any; id: any; image: any; price: any }) {
+  const { data } = useGetProfileQuery()
   const [itemCount, setItemCount] = useState(0)
 
-  const [addToCart] = useAddToCartMutation({
+  const [addToCart, { error }] = useAddToCartMutation({
     update(cache, { data: addcart }) {
-      console.log(cache.extract())
       cache.modify({
         fields: {
           carts(existingCart = []) {
@@ -25,16 +25,17 @@ export default function ProductItem(product: {
         },
       })
     },
+    refetchQueries: [{ query: GetCartDocument }],
   })
 
   const onHandleAddToCart = () => {
-    if (localStorage.getItem('token-info') === null) {
+    if (localStorage.getItem('token') === null) {
       throw Error('User must logged in')
     } else {
       if (itemCount > 0) {
         addToCart({
           variables: {
-            username: JSON.parse(localStorage.getItem('token-info') || ''),
+            username: data?.GetProfile?.username as string,
             itemID: product.id,
             itemCount: itemCount,
           },
@@ -49,11 +50,7 @@ export default function ProductItem(product: {
       key={product?.id}
     >
       <a href="#">
-        <img
-          className="rounded-t-lg"
-          src={product?.image ? product.image : ''}
-          alt=""
-        />
+        <img className="rounded-t-lg" src={product?.image ? product.image : ''} alt="" />
       </a>
       <div className="p-5">
         <a href="#">
@@ -61,9 +58,7 @@ export default function ProductItem(product: {
             {product?.name}
           </h5>
         </a>
-        <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
-          {product?.price},000d
-        </p>
+        <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{product?.price},000d</p>
         <div className="relative flex flex-wrap items-center justify-between">
           <button
             onClick={() => {
@@ -104,6 +99,7 @@ export default function ProductItem(product: {
             Add to cart
           </button>
         </div>
+        {error && <span className="text-red-500">{error.message}</span>}
       </div>
     </div>
   )
